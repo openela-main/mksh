@@ -1,7 +1,7 @@
 Summary:          MirBSD enhanced version of the Korn Shell
 Name:             mksh
 Version:          59c
-Release:          12%{?dist}
+Release:          13%{?dist}
 # ISC (strlcpy.c) and MirOS (the rest)
 License:          MirOS AND ISC
 URL:              https://www.mirbsd.org/mksh.htm
@@ -142,7 +142,10 @@ fi
 %postun
 for d in /bin %{_bindir}; do
   for s in ksh %{name} rksh rmksh; do
-    [ ! -x "$d/$s" ] && sed -e 's@^'"$d/$s"'$@POSTUNREMOVE@' -e '/^POSTUNREMOVE$/d' -i %{_sysconfdir}/shells
+    if [ ! -x "$d/$s" ]
+    then
+      sed -e 's@^'"$d/$s"'$@POSTUNREMOVE@' -e '/^POSTUNREMOVE$/d' -i %{_sysconfdir}/shells
+    fi
   done
 done
 
@@ -168,6 +171,9 @@ done
 %{_mandir}/man1/rmksh.1*
 
 %changelog
+* Wed May 14 2025 Michal Hlavinka <mhlavink@redhat.com> - 59c-13
+- fix postun scriptlet (RHEL-82203)
+
 * Tue Oct 29 2024 Troy Dawson <tdawson@redhat.com> - 59c-12
 - Bump release for October 2024 mass rebuild:
   Resolves: RHEL-64018
